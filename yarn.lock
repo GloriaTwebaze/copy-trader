@@ -207,10 +207,10 @@ braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
-bybit-api@^3.5.4:
-  version "3.5.4"
-  resolved "https://registry.yarnpkg.com/bybit-api/-/bybit-api-3.5.4.tgz#32ff4d9c2f9dfc246dc0ae51fcfe7b371cfb0db1"
-  integrity sha512-Jgm1GOtsbTfPiMwBxw508N1s7xec5MMLzZG+lx5lQki2IJgpZr9QqTvzaknYBBgvVhhMKfKFODJdUwyJky6NrQ==
+bybit-api@3.3.10:
+  version "3.3.10"
+  resolved "https://registry.yarnpkg.com/bybit-api/-/bybit-api-3.3.10.tgz#9aaa7ef14bc34556f46a56079e3c07281ab683bf"
+  integrity sha512-5z7QezAH2qUb9EqACdDWLNU8IE0XBOslR1B86xHL0ExT5vmHuDGVQpmgHpGTbWLp3yUc58JwKKV8g9AxhGXCnQ==
   dependencies:
     axios "^0.21.0"
     isomorphic-ws "^4.0.1"

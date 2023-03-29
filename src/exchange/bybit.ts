@@ -37,5 +37,5 @@ export class BybitExchange {
 
 export const bybitExchange = new BybitExchange({
   key: CONFIG.API_KEY,
-  secret: CONFIG.API_SECREY,
+  secret: CONFIG.API_SECRET,
 });

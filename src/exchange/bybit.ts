@@ -9,7 +9,12 @@ import { CONFIG } from "../config/config";
 export class BybitExchange {
   private linear: LinearClient;
 
-  constructor(params: { key: string; secret: string }) {
+  constructor(params: {
+    key: string;
+    secret: string;
+    testnet: boolean;
+    baseUrl: string;
+  }) {
     this.linear = new LinearClient(params);
   }
 
@@ -29,7 +34,6 @@ export class BybitExchange {
 
   placeOrder = async (params: NewLinearOrder): Promise<LinearOrder | null> => {
     const order = await this.linear.placeActiveOrder(params);
-
     console.log("Placed Order: ", order);
     return null;
   };
@@ -38,4 +42,6 @@ export class BybitExchange {
 export const bybitExchange = new BybitExchange({
   key: CONFIG.API_KEY,
   secret: CONFIG.API_SECRET,
+  testnet: true,
+  baseUrl: CONFIG.BASE_URL,
 });

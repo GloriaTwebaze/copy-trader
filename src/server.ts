@@ -19,7 +19,7 @@ const main = () => {
     return res.status(200).json({ status: "Success", data: orderBook });
   });
 
-  app.post("/private/linear/order/create", async (req, _res) => {
+  app.post("/private/linear/order/create", async (req, res) => {
     const { side, symbol, order_type, qty, price } = req.body;
 
     const orderToPlace = await bybitExchange.placeOrder({
@@ -31,9 +31,14 @@ const main = () => {
       time_in_force: "GoodTillCancel",
       reduce_only: false,
       close_on_trigger: false,
+      position_idx:0
     });
 
-    console.log('Order went through...', orderToPlace);
+    if (orderToPlace) {
+      return res.status(200).json({status:'Success', data:orderToPlace})
+    } else {
+      return res.status(400).json({status:'Failed', message:'Something went wrong...'})
+    }
   });
 
   app.listen(PORT, () => {

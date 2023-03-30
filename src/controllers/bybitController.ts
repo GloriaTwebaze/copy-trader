@@ -46,3 +46,19 @@ export const getPrice = async (_req: Request, res: Response) => {
     return res.status(400).json({ success: true, message: error.message });
   }
 };
+
+export const getWalletBalances = async (_req: Request, res: Response) => {
+  try {
+    const walletBalances = await bybitExchange.getWalletBalance();
+
+    const balances = {
+      ETH: walletBalances?.ETH?.available_balance.toFixed(3),
+      BTC: walletBalances?.BTC?.available_balance.toFixed(3),
+      USDT: walletBalances?.USDT?.available_balance.toFixed(3),
+    };
+    return res.status(200).json({ success: true, data: balances });
+  } catch (e) {
+    console.error(e.message);
+    return res.status(200).json({ success: false, message: e.message });
+  }
+};

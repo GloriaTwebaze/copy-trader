@@ -3,6 +3,7 @@ import {
   LinearOrder,
   NewLinearOrder,
   SymbolParam,
+  WalletBalances,
 } from "bybit-api";
 import { CONFIG } from "../config/config";
 
@@ -36,6 +37,24 @@ export class BybitExchange {
     }
   };
 
+  getWalletBalance = async (): Promise<WalletBalances | null> => {
+    const walletBalances = await this.linear.getWalletBalance();
+    const { ret_code, ret_msg, result } = walletBalances;
+
+    if (ret_code === 0 && ret_msg === "OK" && result) {
+      return result;
+    } else {
+      console.log("Error: ", { ret_code, ret_msg });
+      return null;
+    }
+  };
+
+  /**
+   * Places a buy or sell order.
+   *
+   * @param params of type `NewLinearOrder`
+   * @returns `LinearOrder`
+   */
   placeOrder = async (params: NewLinearOrder): Promise<LinearOrder | null> => {
     const order = await this.linear.placeActiveOrder(params);
     const { ret_code, ret_msg, result } = order;

@@ -19,14 +19,21 @@ export class BybitExchange {
   }
 
   /**
-   * A function to get an Market Price
+   * A function to get an Market Price for ETHUSDT
    * @param params
    * @returns an array
    */
-  getPrice = async (): Promise<any[] | null> => {
-    const tickers = await this.linear.getTickers();
-    console.log("Tickers: ", tickers);
-    return null;
+  getPrice = async (symbol: SymbolParam): Promise<any[] | null> => {
+    const tickers = await this.linear.getTickers(symbol);
+
+    const { ret_code, ret_msg, result } = tickers;
+
+    if (ret_code === 0 && ret_msg === "OK" && result != null) {
+      return result;
+    } else {
+      console.log("Received Tickers: ", tickers);
+      return null;
+    }
   };
 
   placeOrder = async (params: NewLinearOrder): Promise<LinearOrder | null> => {

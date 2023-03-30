@@ -34,8 +34,14 @@ export class BybitExchange {
 
   placeOrder = async (params: NewLinearOrder): Promise<LinearOrder | null> => {
     const order = await this.linear.placeActiveOrder(params);
-    console.log("Placed Order: ", order);
-    return null;
+    const { ret_code, ret_msg, result } = order;
+
+    if (ret_code === 0 && ret_msg === "OK" && result != null) {
+      return { ...result };
+    } else {
+      console.log("Placed Order: ", order);
+      return null;
+    }
   };
 }
 

@@ -1,45 +1,19 @@
 import express from "express";
 import "dotenv/config";
 import { CONFIG } from "./config/config";
-import { bybitExchange } from "./exchange/bybit";
+import configMiddleware from "./middleware/appMiddleware";
+import configRoutes from "./routes/index";
 
 const app = express();
 
 const main = () => {
   const PORT = CONFIG.PORT;
 
-  // middleware
-  app.use(express.json());
+  // Middleware
+  configMiddleware(app);
 
-  app.get("/public/linear/kline", async (req, res) => {
-    const { symbol } = req.body;
-    // Get Order book
-    const orderBook = await bybitExchange.getOrderBook({ symbol });
-
-    return res.status(200).json({ status: "Success", data: orderBook });
-  });
-
-  app.post("/private/linear/order/create", async (req, res) => {
-    const { side, symbol, order_type, qty, price } = req.body;
-
-    const orderToPlace = await bybitExchange.placeOrder({
-      side,
-      symbol,
-      order_type,
-      qty,
-      price,
-      time_in_force: "GoodTillCancel",
-      reduce_only: false,
-      close_on_trigger: false,
-      position_idx:0
-    });
-
-    if (orderToPlace) {
-      return res.status(200).json({status:'Success', data:orderToPlace})
-    } else {
-      return res.status(400).json({status:'Failed', message:'Something went wrong...'})
-    }
-  });
+  // Routes
+  configRoutes(app);
 
   app.listen(PORT, () => {
     console.log(`Server running at port ${PORT}`);

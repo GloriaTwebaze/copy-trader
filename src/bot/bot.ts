@@ -12,6 +12,8 @@ interface OrderParams {
   price?: number;
 }
 
+const baseAPIURL = CONFIG.BASE_API_URL;
+
 const bot = new Telegraf(CONFIG.TOKEN);
 bot.start((ctx) => {
   ctx.reply(
@@ -20,6 +22,7 @@ bot.start((ctx) => {
       Markup.button.callback("Buy", "buy"),
       Markup.button.callback("Sell", "sell"),
       Markup.button.callback("Get Price", "get-price"),
+      Markup.button.callback("Get Wallet Balance", "get-wallet-balances"),
     ])
   );
 });
@@ -34,7 +37,7 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
   try {
     ctx.reply(`Placing ${params.side} order...`);
     const res = await axios.post(
-      "http://localhost:5000/api/place-order",
+      `${baseAPIURL}/place-order`,
       {
         side: params.side,
         symbol: "ETHUSDT",
@@ -126,11 +129,31 @@ bot.action("sell", async (ctx) => {
 // Action to get ETHUSDT price
 bot.action("get-price", async (ctx) => {
   try {
-    const res = await axios.get("http://localhost:5000/api/get-price");
+    const res = await axios.get(`${baseAPIURL}/get-price`);
     const price = res.data.data;
     ctx.replyWithHTML(
       `The last price for ETHUSDT is <strong>${price}</strong>`
     );
+  } catch (error) {
+    console.error(error);
+    ctx.reply(`Something went wrong, try again...`);
+  }
+});
+
+// Action to get Wallet Balances
+bot.action("get-wallet-balances", async (ctx) => {
+  try {
+    const res = await axios.get(`${baseAPIURL}/get-wallet-balance`);
+
+    const balances = res.data.data;
+    console.log("Bot Balances: ", balances);
+
+    let message = `<strong>Wallet Balances</strong>`;
+    message += `\nETH: <strong>${balances.ETH}</strong>`;
+    message += `\nUSDT: <strong>${balances.USDT}</strong>`;
+    message += `\nBTC: <strong>${balances.BTC}</strong>`;
+
+    ctx.replyWithHTML(message);
   } catch (error) {
     console.error(error);
     ctx.reply(`Something went wrong, try again...`);

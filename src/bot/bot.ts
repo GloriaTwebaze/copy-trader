@@ -19,6 +19,7 @@ bot.start((ctx) => {
     Markup.inlineKeyboard([
       Markup.button.callback("Buy", "buy"),
       Markup.button.callback("Sell", "sell"),
+      Markup.button.callback("Get Price", "get-price"),
     ])
   );
 });
@@ -120,6 +121,20 @@ bot.action("sell", async (ctx) => {
     };
     await placeOrderRequest(orderDetails, ctx);
   });
+});
+
+// Action to get ETHUSDT price
+bot.action("get-price", async (ctx) => {
+  try {
+    const res = await axios.get("http://localhost:5000/api/get-price");
+    const price = res.data.data;
+    ctx.replyWithHTML(
+      `The last price for ETHUSDT is <strong>${price}</strong>`
+    );
+  } catch (error) {
+    console.error(error);
+    ctx.reply(`Something went wrong, try again...`);
+  }
 });
 
 export { bot };

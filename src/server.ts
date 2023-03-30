@@ -3,8 +3,20 @@ import "dotenv/config";
 import { CONFIG } from "./config/config";
 import configMiddleware from "./middleware/appMiddleware";
 import configRoutes from "./routes/index";
+import { bot } from "./bot/bot";
 
 const app = express();
+
+const startBot = () => {
+  console.log(`---`.repeat(10))
+    console.log(`starting bot  🤖 `)
+    console.log(`---`.repeat(10))
+    bot.launch().then(() => {
+
+    }).catch(() => {
+
+    })
+}
 
 const main = () => {
   const PORT = CONFIG.PORT;
@@ -18,6 +30,7 @@ const main = () => {
   app.listen(PORT, () => {
     console.log(`Server running at port ${PORT}`);
   });
+  startBot()
 };
 
 main();

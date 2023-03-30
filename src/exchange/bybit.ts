@@ -19,17 +19,14 @@ export class BybitExchange {
   }
 
   /**
-   * A function to get an Orderbook
+   * A function to get an Market Price
    * @param params
    * @returns an array
    */
-  getOrderBook = async (params: SymbolParam): Promise<any[] | null> => {
-    const orderBook = await this.linear.getOrderBook({ symbol: params.symbol });
-    if (orderBook) {
-      return [orderBook];
-    } else {
-      return null;
-    }
+  getPrice = async (): Promise<any[] | null> => {
+    const tickers = await this.linear.getTickers();
+    console.log("Tickers: ", tickers);
+    return null;
   };
 
   placeOrder = async (params: NewLinearOrder): Promise<LinearOrder | null> => {

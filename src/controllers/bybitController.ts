@@ -16,8 +16,13 @@ export const placeOrder = async (req: Request, res: Response) => {
       close_on_trigger: false,
       position_idx: 0,
     });
-    return res.status(200).json({ success: true, data: orderToPlace });
+
+    if (orderToPlace) {
+      return res.status(200).json({ success: true, data: orderToPlace });
+    } else {
+      return res.status(400).json({ success: false, message: 'Something went wrong...' });
+    }
   } catch (error) {
-    return res.status(200).json({ success: false, message: error.message });
+    return res.status(400).json({ success: false, message: error.message });
   }
 };

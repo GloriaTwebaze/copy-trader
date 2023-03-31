@@ -23,12 +23,13 @@ bot.start((ctx) => {
       Markup.button.callback("Sell", "sell"),
       Markup.button.callback("Get Price", "get-price"),
       Markup.button.callback("Get Wallet Balance", "get-wallet-balances"),
+      Markup.button.callback("Get Orders", "get-orders"),
     ])
   );
 });
 
 /**
- * Places an order depending on the parameters passed and sends appropriate replies to the user through the bot.
+ * Places an order depobjectending on the parameters passed and sends appropriate replies to the user through the bot.
  *
  * @param params has the data for the order. It expects an object with `side`,`qty`,`order_type` and an optional `price` depending on whether it is a Limit or Market order
  * @param ctx of type `Context` for sending message spt Telegram.
@@ -146,7 +147,6 @@ bot.action("get-wallet-balances", async (ctx) => {
     const res = await axios.get(`${baseAPIURL}/get-wallet-balance`);
 
     const balances = res.data.data;
-    console.log("Bot Balances: ", balances);
 
     let message = `<strong>Wallet Balances</strong>`;
     message += `\nETH: <strong>${balances.ETH}</strong>`;
@@ -158,6 +158,31 @@ bot.action("get-wallet-balances", async (ctx) => {
     console.error(error);
     ctx.reply(`Something went wrong, try again...`);
   }
+});
+
+// Action to get orders
+bot.action("get-orders", async (ctx) => {
+  try {
+    const res = await axios.get(`${baseAPIURL}/get-orders`);
+
+    const orders = res.data.data;
+
+    let message: string = `<strong>Your Orders</strong>`;
+
+    for (let i = 0; i < orders.length; i++) {
+      let order = orders[i];
+      console.log("Order: ", order);
+      message += `\n<strong>Order ${i + 1}</strong>`;
+      message += `\nOrder ID: <strong>${order.orderId}</strong>`;
+      message += `\nPrice: <strong>${order.price}</strong>`;
+      message += `\nSymbol: <strong>${order.symbol}</strong>`;
+      message += `\nSide: <strong>${order.side}</strong>`;
+      message += `\nQuantity: <strong>${order.qty}</strong>`;
+      message += `\nStatus: <strong>${order.status}</strong>\n`;
+      message += `---`.repeat(10);
+    }
+    ctx.replyWithHTML(message);
+  } catch (e) {}
 });
 
 export { bot };

@@ -1,5 +1,6 @@
 import {
   LinearClient,
+  LinearGetOrdersRequest,
   LinearOrder,
   NewLinearOrder,
   SymbolParam,
@@ -37,6 +38,11 @@ export class BybitExchange {
     }
   };
 
+  /**
+   * Gets Wallet Balances
+   *
+   * @returns object contain Wallet Balances
+   */
   getWalletBalance = async (): Promise<WalletBalances | null> => {
     const walletBalances = await this.linear.getWalletBalance();
     const { ret_code, ret_msg, result } = walletBalances;
@@ -45,6 +51,24 @@ export class BybitExchange {
       return result;
     } else {
       console.log("Error: ", { ret_code, ret_msg });
+      return null;
+    }
+  };
+
+  /**
+   * Returns the orders of a user
+   * 
+   * @param params of type LinearGetOrdersRequest specifying the symbol for which to return orders
+   * @returns an object with the orders
+   */
+  getOrders = async (params: LinearGetOrdersRequest): Promise<any | null> => {
+    const orders = await this.linear.getActiveOrderList(params);
+    const { ret_code, ret_msg, result } = orders;
+
+    if (ret_code === 0 && ret_msg === "OK" && result != null) {
+      return result;
+    } else {
+      console.log("Order List: ", orders);
       return null;
     }
   };

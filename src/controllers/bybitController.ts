@@ -62,3 +62,39 @@ export const getWalletBalances = async (_req: Request, res: Response) => {
     return res.status(200).json({ success: false, message: e.message });
   }
 };
+
+export const getOrders = async (_req: Request, res: Response) => {
+  try {
+    const orders = await bybitExchange.getOrders({ symbol: "ETHUSDT" });
+    const ordersToGet = 5;
+    const ordersData: any[] = orders.data;
+
+    if (ordersData) {
+      let topOrders: any[] = [];
+
+      for (let i = 0; i < ordersToGet; i++) {
+        let order = ordersData[i];
+        const orderData = {
+          orderId: order.order_id,
+          price: order.price,
+          symbol: order.symbol,
+          side: order.side,
+          qty: order.qty,
+          orderType: order.order_type,
+          status: order.order_status,
+        };
+
+        topOrders.push(orderData);
+      }
+
+      return res.status(200).json({ success: true, data: topOrders });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "There are no orders." });
+    }
+  } catch (e) {
+    console.error(e.message);
+    return res.status(400).json({ success: false, message: e.message });
+  }
+};

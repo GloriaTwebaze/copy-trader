@@ -1,4 +1,5 @@
 import {
+  LinearCancelOrderRequest,
   LinearClient,
   LinearGetOrdersRequest,
   LinearOrder,
@@ -57,7 +58,7 @@ export class BybitExchange {
 
   /**
    * Returns the orders of a user
-   * 
+   *
    * @param params of type LinearGetOrdersRequest specifying the symbol for which to return orders
    * @returns an object with the orders
    */
@@ -68,7 +69,7 @@ export class BybitExchange {
     if (ret_code === 0 && ret_msg === "OK" && result != null) {
       return result;
     } else {
-      console.log("Order List: ", orders);
+      console.error({ ret_code, ret_msg, result });
       return null;
     }
   };
@@ -89,6 +90,13 @@ export class BybitExchange {
       console.log("Placed Order: ", order);
       return null;
     }
+  };
+
+  cancelOrders = async (params: SymbolParam): Promise<any | null> => {
+    const cancelOrder = await this.linear.cancelAllActiveOrders(params);
+    const { ret_code, ret_msg } = cancelOrder;
+
+    return { ret_code, ret_msg };
   };
 }
 

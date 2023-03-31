@@ -98,3 +98,25 @@ export const getOrders = async (_req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: e.message });
   }
 };
+
+export const cancelOrder = async (_req: Request, res: Response) => {
+  try {
+    const orderCancel = await bybitExchange.cancelOrders({ symbol: "ETHUSDT" });
+
+    if (orderCancel.ret_code === 0) {
+      res
+        .status(200)
+        .json({ success: true, message: "Successfully Cancelled" });
+    } else {
+      res
+        .status(400)
+        .json({
+          success: false,
+          message: "There are no active orders to cancel.",
+        });
+    }
+  } catch (e) {
+    console.error(e.message);
+    res.status(400).json({ success: false, message: e.message });
+  }
+};

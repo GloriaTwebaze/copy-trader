@@ -24,6 +24,7 @@ bot.start((ctx) => {
       Markup.button.callback("Get Price", "get-price"),
       Markup.button.callback("Get Wallet Balance", "get-wallet-balances"),
       Markup.button.callback("Get Orders", "get-orders"),
+      Markup.button.callback("Cancel Orders", "cancel-orders"),
     ])
   );
 });
@@ -183,6 +184,17 @@ bot.action("get-orders", async (ctx) => {
     }
     ctx.replyWithHTML(message);
   } catch (e) {}
+});
+
+// Action to cancel orders
+bot.action("cancel-orders", async (ctx) => {
+  try {
+    await axios.get(`${baseAPIURL}/cancel-order`);
+    ctx.reply("You have successfully cancelled active orders.");
+  } catch (error) {
+    console.error(error);
+    ctx.reply(`Something went wrong, try again...`);
+  }
 });
 
 export { bot };

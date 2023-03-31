@@ -96,6 +96,8 @@ export class BybitExchange {
     const cancelOrder = await this.linear.cancelAllActiveOrders(params);
     const { ret_code, ret_msg } = cancelOrder;
 
+    console.log({ ret_code, ret_msg });
+
     return { ret_code, ret_msg };
   };
 }

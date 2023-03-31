@@ -17,7 +17,7 @@ const baseAPIURL = CONFIG.BASE_API_URL;
 const bot = new Telegraf(CONFIG.TOKEN);
 bot.start((ctx) => {
   ctx.reply(
-    `Welcome ${ctx.message.from.first_name} let us do some trading.`,
+    `Welcome ${ctx.message.from.first_name}. Let us do some trading!!`,
     Markup.inlineKeyboard([
       Markup.button.callback("Buy", "buy"),
       Markup.button.callback("Sell", "sell"),

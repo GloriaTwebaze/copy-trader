@@ -16,17 +16,7 @@ const baseAPIURL = CONFIG.BASE_API_URL;
 
 const bot = new Telegraf(CONFIG.TOKEN);
 bot.start((ctx) => {
-  ctx.reply(
-    `Welcome ${ctx.message.from.first_name}. Let us do some trading!!`,
-    Markup.inlineKeyboard([
-      Markup.button.callback("Buy", "buy"),
-      Markup.button.callback("Sell", "sell"),
-      Markup.button.callback("Get Price", "get-price"),
-      Markup.button.callback("Get Wallet Balance", "get-wallet-balances"),
-      Markup.button.callback("Get Orders", "get-orders"),
-      Markup.button.callback("Cancel Orders", "cancel-orders"),
-    ])
-  );
+  ctx.reply(`Welcome ${ctx.message.from.first_name}. Let us do some trading!!`);
 });
 
 /**
@@ -66,7 +56,7 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
 };
 
 // Action to place a buy
-bot.action("buy", async (ctx) => {
+bot.command("buy", async (ctx) => {
   ctx.reply(
     "Would you like to place a Market or Limit order for the buy?",
     Markup.inlineKeyboard([
@@ -97,7 +87,7 @@ bot.action("buy", async (ctx) => {
 });
 
 // Action to place a sell
-bot.action("sell", async (ctx) => {
+bot.command("sell", async (ctx) => {
   ctx.reply(
     "Would you like to place a Market or Limit order for the sell?",
     Markup.inlineKeyboard([
@@ -129,7 +119,7 @@ bot.action("sell", async (ctx) => {
 });
 
 // Action to get ETHUSDT price
-bot.action("get-price", async (ctx) => {
+bot.command("get_price", async (ctx) => {
   try {
     const res = await axios.get(`${baseAPIURL}/get-price`);
     const price = res.data.data;
@@ -143,7 +133,7 @@ bot.action("get-price", async (ctx) => {
 });
 
 // Action to get Wallet Balances
-bot.action("get-wallet-balances", async (ctx) => {
+bot.command("get_wallet_balances", async (ctx) => {
   try {
     const res = await axios.get(`${baseAPIURL}/get-wallet-balance`);
 
@@ -162,7 +152,7 @@ bot.action("get-wallet-balances", async (ctx) => {
 });
 
 // Action to get orders
-bot.action("get-orders", async (ctx) => {
+bot.command("get_orders", async (ctx) => {
   try {
     const res = await axios.get(`${baseAPIURL}/get-orders`);
 
@@ -187,7 +177,7 @@ bot.action("get-orders", async (ctx) => {
 });
 
 // Action to cancel orders
-bot.action("cancel-orders", async (ctx) => {
+bot.command("cancel_orders", async (ctx) => {
   try {
     await axios.get(`${baseAPIURL}/cancel-order`);
     ctx.reply("You have successfully cancelled active orders.");

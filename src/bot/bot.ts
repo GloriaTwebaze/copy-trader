@@ -58,7 +58,7 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
   }
 };
 
-const marketOrder = () => {
+const marketOrder = (side: string) => {
   // Command to handle setting a market order
   bot.command("market", async (ctx) => {
     const args = ctx.message.text.split(" ").slice(1);
@@ -69,7 +69,7 @@ const marketOrder = () => {
 
     try {
       const orderDetails = {
-        side: "Buy",
+        side: side,
         qty: parseFloat(qty),
         order_type: "Market",
         symbol: symbol,
@@ -82,7 +82,7 @@ const marketOrder = () => {
   });
 };
 
-const limitOrder = () => {
+const limitOrder = (side: string) => {
   // Command to handle setting a market order
   bot.command("limit", async (ctx) => {
     const args = ctx.message.text.split(" ").slice(1);
@@ -93,7 +93,7 @@ const limitOrder = () => {
 
     try {
       const orderDetails = {
-        side: "Buy",
+        side: side,
         qty: parseFloat(qty),
         order_type: "Limit",
         symbol: symbol,
@@ -122,7 +122,7 @@ bot.command("buy", async (ctx) => {
       "To proceed with a Market buy order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market PAIR quantity (/market BTCUSDT 0.2)</strong>"
     );
 
-    marketOrder();
+    marketOrder("Buy");
   });
 
   // Action to place a market order
@@ -131,41 +131,38 @@ bot.command("buy", async (ctx) => {
       "To proceed with a Limit buy order, reply with the pair quantity and price you would like to trade with. \nFollow the format: <strong>/limit PAIR quantity price (/limit BTCUSDT 0.2 28290)</strong>"
     );
 
-    limitOrder();
+    limitOrder("Buy");
   });
 });
 
 // Action to place a sell
-// bot.command("sell", async (ctx) => {
-//   ctx.reply(
-//     "Would you like to place a Market or Limit order for the sell?",
-//     Markup.inlineKeyboard([
-//       Markup.button.callback("Market Order", "sell-market-order"),
-//       Markup.button.callback("Limit Order", "sell-limit-order"),
-//     ])
-//   );
+bot.command("sell", async (ctx) => {
+  ctx.reply(
+    "Would you like to place a Market or Limit order for the sell?",
+    Markup.inlineKeyboard([
+      Markup.button.callback("Market Order", "sell_market_order"),
+      Markup.button.callback("Limit Order", "sell_limit_order"),
+    ])
+  );
 
-//   // Action to place a market order
-//   bot.action("sell-market-order", async () => {
-//     const orderDetails = {
-//       side: "Sell",
-//       qty: 0.1,
-//       order_type: "Market",
-//     };
-//     await placeOrderRequest(orderDetails, ctx);
-//   });
+  // Action to place a market order
+  bot.action("sell_market_order", async () => {
+    ctx.replyWithHTML(
+      "To proceed with a Market sel order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market PAIR quantity (/market BTCUSDT 0.2)</strong>"
+    );
 
-//   // Action to place a market order
-//   bot.action("sell-limit-order", async () => {
-//     const orderDetails = {
-//       side: "Sell",
-//       qty: 0.1,
-//       order_type: "Limit",
-//       price: 1800,
-//     };
-//     await placeOrderRequest(orderDetails, ctx);
-//   });
-// });
+    marketOrder("Sell");
+  });
+
+  // Action to place a market order
+  bot.action("sell_limit_order", async () => {
+    ctx.replyWithHTML(
+      "To proceed with a Limit sell order, reply with the pair quantity and price you would like to trade with. \nFollow the format: <strong>/limit PAIR quantity price (/limit BTCUSDT 0.2 28290)</strong>"
+    );
+
+    limitOrder("Sell");
+  });
+});
 
 // Action to get ETHUSDT price
 bot.command("get_price", async (ctx) => {

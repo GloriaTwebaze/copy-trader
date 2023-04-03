@@ -10,13 +10,16 @@ interface OrderParams {
   qty: number;
   order_type: string;
   price?: number;
+  symbol: string;
 }
 
 const baseAPIURL = CONFIG.BASE_API_URL;
 
 const bot = new Telegraf(CONFIG.TOKEN);
 bot.start((ctx) => {
-  ctx.reply(`Welcome ${ctx.message.from.first_name}. Let us do some trading!!`);
+  ctx.reply(
+    `Welcome ${ctx.message.from.first_name}. Let us do some trading!!\nClick on the menu to select a command to run.`
+  );
 });
 
 /**
@@ -32,7 +35,7 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
       `${baseAPIURL}/place-order`,
       {
         side: params.side,
-        symbol: "ETHUSDT",
+        symbol: params.symbol,
         qty: params.qty,
         order_type: params.order_type,
         price: params.price,
@@ -60,63 +63,87 @@ bot.command("buy", async (ctx) => {
   ctx.reply(
     "Would you like to place a Market or Limit order for the buy?",
     Markup.inlineKeyboard([
-      Markup.button.callback("Market Order", "market-order"),
-      Markup.button.callback("Limit Order", "limit-order"),
+      Markup.button.callback("Market Order", "market_order"),
+      Markup.button.callback("Limit Order", "limit_order"),
     ])
   );
   // Action to place a market order
-  bot.action("market-order", async () => {
-    const orderDetails = {
-      side: "Buy",
-      qty: 0.1,
-      order_type: "Market",
-    };
-    await placeOrderRequest(orderDetails, ctx);
+  bot.action("market_order", async () => {
+    ctx.replyWithHTML(
+      "To proceed with a market buy order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market PAIR quantity (/market BTCUSDT 0.2)</strong>"
+    );
+
+    marketOrder();
   });
 
+  const marketOrder = () => {
+    // Command to handle setting a market order
+    bot.command("market", async (ctx) => {
+      const args = ctx.message.text.split(" ").slice(1);
+      if (args.length > 2) {
+        ctx.reply("Please check that your reply matches the format provided.");
+      }
+      const [symbol, qty] = args;
+
+      try {
+        const orderDetails = {
+          side: "Buy",
+          qty: parseFloat(qty),
+          order_type: "Market",
+          symbol: symbol,
+        };
+        await placeOrderRequest(orderDetails, ctx);
+      } catch (e) {
+        console.error(e.message);
+        ctx.reply("Something went wrong, try again...");
+      }
+    });
+  };
+
   // Action to place a market order
-  bot.action("limit-order", async () => {
+  bot.action("limit", async () => {
     const orderDetails = {
       side: "Buy",
       qty: 0.1,
       order_type: "Limit",
       price: 1800,
+      symbol: "",
     };
     await placeOrderRequest(orderDetails, ctx);
   });
 });
 
 // Action to place a sell
-bot.command("sell", async (ctx) => {
-  ctx.reply(
-    "Would you like to place a Market or Limit order for the sell?",
-    Markup.inlineKeyboard([
-      Markup.button.callback("Market Order", "sell-market-order"),
-      Markup.button.callback("Limit Order", "sell-limit-order"),
-    ])
-  );
+// bot.command("sell", async (ctx) => {
+//   ctx.reply(
+//     "Would you like to place a Market or Limit order for the sell?",
+//     Markup.inlineKeyboard([
+//       Markup.button.callback("Market Order", "sell-market-order"),
+//       Markup.button.callback("Limit Order", "sell-limit-order"),
+//     ])
+//   );
 
-  // Action to place a market order
-  bot.action("sell-market-order", async () => {
-    const orderDetails = {
-      side: "Sell",
-      qty: 0.1,
-      order_type: "Market",
-    };
-    await placeOrderRequest(orderDetails, ctx);
-  });
+//   // Action to place a market order
+//   bot.action("sell-market-order", async () => {
+//     const orderDetails = {
+//       side: "Sell",
+//       qty: 0.1,
+//       order_type: "Market",
+//     };
+//     await placeOrderRequest(orderDetails, ctx);
+//   });
 
-  // Action to place a market order
-  bot.action("sell-limit-order", async () => {
-    const orderDetails = {
-      side: "Sell",
-      qty: 0.1,
-      order_type: "Limit",
-      price: 1800,
-    };
-    await placeOrderRequest(orderDetails, ctx);
-  });
-});
+//   // Action to place a market order
+//   bot.action("sell-limit-order", async () => {
+//     const orderDetails = {
+//       side: "Sell",
+//       qty: 0.1,
+//       order_type: "Limit",
+//       price: 1800,
+//     };
+//     await placeOrderRequest(orderDetails, ctx);
+//   });
+// });
 
 // Action to get ETHUSDT price
 bot.command("get_price", async (ctx) => {

@@ -58,6 +58,55 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
   }
 };
 
+const marketOrder = () => {
+  // Command to handle setting a market order
+  bot.command("market", async (ctx) => {
+    const args = ctx.message.text.split(" ").slice(1);
+    if (args.length > 2) {
+      ctx.reply("Please check that your reply matches the format provided.");
+    }
+    const [symbol, qty] = args;
+
+    try {
+      const orderDetails = {
+        side: "Buy",
+        qty: parseFloat(qty),
+        order_type: "Market",
+        symbol: symbol,
+      };
+      await placeOrderRequest(orderDetails, ctx);
+    } catch (e) {
+      console.error(e.message);
+      ctx.reply("Something went wrong, try again...");
+    }
+  });
+};
+
+const limitOrder = () => {
+  // Command to handle setting a market order
+  bot.command("limit", async (ctx) => {
+    const args = ctx.message.text.split(" ").slice(1);
+    if (args.length > 3) {
+      ctx.reply("Please check that your reply matches the format provided.");
+    }
+    const [symbol, qty, price] = args;
+
+    try {
+      const orderDetails = {
+        side: "Buy",
+        qty: parseFloat(qty),
+        order_type: "Limit",
+        symbol: symbol,
+        price: parseFloat(price),
+      };
+      await placeOrderRequest(orderDetails, ctx);
+    } catch (e) {
+      console.error(e.message);
+      ctx.reply("Something went wrong, try again...");
+    }
+  });
+};
+
 // Action to place a buy
 bot.command("buy", async (ctx) => {
   ctx.reply(
@@ -70,46 +119,19 @@ bot.command("buy", async (ctx) => {
   // Action to place a market order
   bot.action("market_order", async () => {
     ctx.replyWithHTML(
-      "To proceed with a market buy order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market PAIR quantity (/market BTCUSDT 0.2)</strong>"
+      "To proceed with a Market buy order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market PAIR quantity (/market BTCUSDT 0.2)</strong>"
     );
 
     marketOrder();
   });
 
-  const marketOrder = () => {
-    // Command to handle setting a market order
-    bot.command("market", async (ctx) => {
-      const args = ctx.message.text.split(" ").slice(1);
-      if (args.length > 2) {
-        ctx.reply("Please check that your reply matches the format provided.");
-      }
-      const [symbol, qty] = args;
-
-      try {
-        const orderDetails = {
-          side: "Buy",
-          qty: parseFloat(qty),
-          order_type: "Market",
-          symbol: symbol,
-        };
-        await placeOrderRequest(orderDetails, ctx);
-      } catch (e) {
-        console.error(e.message);
-        ctx.reply("Something went wrong, try again...");
-      }
-    });
-  };
-
   // Action to place a market order
-  bot.action("limit", async () => {
-    const orderDetails = {
-      side: "Buy",
-      qty: 0.1,
-      order_type: "Limit",
-      price: 1800,
-      symbol: "",
-    };
-    await placeOrderRequest(orderDetails, ctx);
+  bot.action("limit_order", async () => {
+    ctx.replyWithHTML(
+      "To proceed with a Limit buy order, reply with the pair quantity and price you would like to trade with. \nFollow the format: <strong>/limit PAIR quantity price (/limit BTCUSDT 0.2 28290)</strong>"
+    );
+
+    limitOrder();
   });
 });
 

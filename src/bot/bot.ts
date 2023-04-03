@@ -107,6 +107,29 @@ const limitOrder = (side: string) => {
   });
 };
 
+const getPrice = () => {
+  bot.command("price", async (ctx) => {
+    const args = ctx.message.text.split(" ").slice(1);
+    if (args.length > 1) {
+      ctx.reply("Please check that your reply matches the format provided.");
+    }
+    const [symbol] = args;
+
+    try {
+      const res = await axios.get(`${baseAPIURL}/get-price`, {
+        data: { symbol },
+      });
+      const price = res.data.data;
+      ctx.replyWithHTML(
+        `The last price for <strong>${symbol}</strong> is <strong>${price}</strong>`
+      );
+    } catch (error) {
+      console.error(error);
+      ctx.reply(`Something went wrong, try again...`);
+    }
+  });
+};
+
 // Action to place a buy
 bot.command("buy", async (ctx) => {
   ctx.reply(
@@ -166,16 +189,11 @@ bot.command("sell", async (ctx) => {
 
 // Action to get ETHUSDT price
 bot.command("get_price", async (ctx) => {
-  try {
-    const res = await axios.get(`${baseAPIURL}/get-price`);
-    const price = res.data.data;
-    ctx.replyWithHTML(
-      `The last price for ETHUSDT is <strong>${price}</strong>`
-    );
-  } catch (error) {
-    console.error(error);
-    ctx.reply(`Something went wrong, try again...`);
-  }
+  ctx.replyWithHTML(
+    "To get the price, reply with the pair you would like to fetch the price for. \nFollow the format: <strong>/price PAIR (/price BTCUSDT)</strong>"
+  );
+
+  getPrice();
 });
 
 // Action to get Wallet Balances

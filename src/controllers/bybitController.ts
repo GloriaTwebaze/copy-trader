@@ -29,9 +29,11 @@ export const placeOrder = async (req: Request, res: Response) => {
   }
 };
 
-export const getPrice = async (_req: Request, res: Response) => {
+export const getPrice = async (req: Request, res: Response) => {
+  const { symbol } = req.body;
+
   try {
-    const tinkers = await bybitExchange.getPrice({ symbol: "ETHUSDT" });
+    const tinkers = await bybitExchange.getPrice({ symbol });
 
     if (tinkers) {
       const symbolPrice: number = tinkers[0].last_price;
@@ -108,12 +110,10 @@ export const cancelOrder = async (_req: Request, res: Response) => {
         .status(200)
         .json({ success: true, message: "Successfully Cancelled" });
     } else {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "There are no active orders to cancel.",
-        });
+      res.status(400).json({
+        success: false,
+        message: "There are no active orders to cancel.",
+      });
     }
   } catch (e) {
     console.error(e.message);

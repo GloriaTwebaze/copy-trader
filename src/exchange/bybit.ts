@@ -1,5 +1,4 @@
 import {
-  LinearCancelOrderRequest,
   LinearClient,
   LinearGetOrdersRequest,
   LinearOrder,
@@ -65,6 +64,18 @@ export class BybitExchange {
   getOrders = async (params: LinearGetOrdersRequest): Promise<any | null> => {
     const orders = await this.linear.getActiveOrderList(params);
     const { ret_code, ret_msg, result } = orders;
+
+    if (ret_code === 0 && ret_msg === "OK" && result != null) {
+      return result;
+    } else {
+      console.error({ ret_code, ret_msg, result });
+      return null;
+    }
+  };
+
+  getPosition = async (params:SymbolParam) => {
+    const positions = await this.linear.getPosition(params);
+    const { ret_code, ret_msg, result } = positions;
 
     if (ret_code === 0 && ret_msg === "OK" && result != null) {
       return result;

@@ -37,7 +37,7 @@ export const getPrice = async (req: Request, res: Response) => {
 
     if (tinkers) {
       const symbolPrice: number = tinkers[0].last_price;
-      console.log("Symbol last price: ", symbolPrice);
+      console.log("First Tinkers: ", tinkers[0]);
       return res.status(200).json({ success: true, data: symbolPrice });
     } else {
       return res
@@ -123,7 +123,7 @@ export const cancelOrder = async (_req: Request, res: Response) => {
 
 export const getPosition = async (req: Request, res: Response) => {
   const { symbol } = req.body;
-  
+
   try {
     const positions = await bybitExchange.getPosition({ symbol });
 

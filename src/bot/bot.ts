@@ -197,7 +197,7 @@ const cancelOrders = () => {
     const [symbol] = args;
 
     try {
-      await axios.get(`${baseAPIURL}/cancel-order`);
+      await axios.get(`${baseAPIURL}/cancel-order`, { data: { symbol } });
       ctx.reply("You have successfully cancelled active orders.");
     } catch (error) {
       console.error(error);

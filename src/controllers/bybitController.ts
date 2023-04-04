@@ -103,9 +103,10 @@ export const getOrders = async (req: Request, res: Response) => {
   }
 };
 
-export const cancelOrder = async (_req: Request, res: Response) => {
+export const cancelOrder = async (req: Request, res: Response) => {
+  const { symbol } = req.body;
   try {
-    const orderCancel = await bybitExchange.cancelOrders({ symbol: "ETHUSDT" });
+    const orderCancel = await bybitExchange.cancelOrders({ symbol });
 
     if (orderCancel.ret_code === 0) {
       res

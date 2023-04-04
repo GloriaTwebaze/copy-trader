@@ -73,6 +73,8 @@ export const getOrders = async (req: Request, res: Response) => {
     const ordersToGet = 3;
     const ordersData: any[] = orders.data;
 
+    console.log("Orders Data Array: ", ordersData);
+
     if (ordersData) {
       let topOrders: any[] = [];
 
@@ -130,19 +132,9 @@ export const getPosition = async (req: Request, res: Response) => {
   try {
     const positions = await bybitExchange.getPosition({ symbol });
 
-    console.log("Positins Got: ", positions);
+    console.log("Positions Got: ", positions);
 
     return res.status(200).json({ success: true, data: positions });
-
-    // if (positions) {
-    //   const symbolPrice: number = tinkers[0].last_price;
-    //   console.log("Symbol last price: ", symbolPrice);
-    //   return res.status(200).json({ success: true, data: symbolPrice });
-    // } else {
-    //   return res
-    //     .status(400)
-    //     .json({ success: false, message: "Please provide a symbol." });
-    // }
   } catch (error) {
     return res.status(400).json({ success: true, message: error.message });
   }

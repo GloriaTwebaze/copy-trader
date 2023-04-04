@@ -227,7 +227,7 @@ bot.command("buy", async (ctx) => {
   // Action to place a market order
   bot.action("limit_order", async () => {
     ctx.replyWithHTML(
-      "To proceed with a Limit buy order, reply with the pair quantity and price you would like to trade with. \nFollow the format: <strong>/limit PAIR quantity price (/limit BTCUSDT 0.2 28290)</strong>"
+      "To proceed with a Limit buy order, reply with the pair quantity and price you would like to trade with. \nFollow the format: <strong>/limit_buy PAIR quantity price (/limit_buy BTCUSDT 0.2 28290)</strong>"
     );
 
     limitOrder("Buy");

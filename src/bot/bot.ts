@@ -65,7 +65,7 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
  */
 const marketOrder = (side: string) => {
   // Command to handle setting a market order
-  bot.command("market", async (ctx) => {
+  bot.command(`market_${side}`.toLocaleLowerCase(), async (ctx) => {
     const args = ctx.message.text.split(" ").slice(1);
     if (args.length > 2) {
       ctx.reply("Please check that your reply matches the format provided.");
@@ -94,7 +94,7 @@ const marketOrder = (side: string) => {
  */
 const limitOrder = (side: string) => {
   // Command to handle setting a market order
-  bot.command("limit", async (ctx) => {
+  bot.command(`limit_${side}`.toLocaleLowerCase(), async (ctx) => {
     const args = ctx.message.text.split(" ").slice(1);
     if (args.length > 3) {
       ctx.reply("Please check that your reply matches the format provided.");
@@ -218,7 +218,7 @@ bot.command("buy", async (ctx) => {
   // Action to place a market order
   bot.action("market_order", async () => {
     ctx.replyWithHTML(
-      "To proceed with a Market buy order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market PAIR quantity (/market BTCUSDT 0.2)</strong>"
+      "To proceed with a Market buy order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market_buy PAIR quantity (/market_buy BTCUSDT 0.2)</strong>"
     );
 
     marketOrder("Buy");
@@ -247,7 +247,7 @@ bot.command("sell", async (ctx) => {
   // Action to place a market order
   bot.action("sell_market_order", async () => {
     ctx.replyWithHTML(
-      "To proceed with a Market sel order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market PAIR quantity (/market BTCUSDT 0.2)</strong>"
+      "To proceed with a Market sel order, reply with the pair and quantity you would like to trade with. \nFollow the format: <strong>/market_sell PAIR quantity (/market_sell BTCUSDT 0.2)</strong>"
     );
 
     marketOrder("Sell");
@@ -256,7 +256,7 @@ bot.command("sell", async (ctx) => {
   // Action to place a market order
   bot.action("sell_limit_order", async () => {
     ctx.replyWithHTML(
-      "To proceed with a Limit sell order, reply with the pair quantity and price you would like to trade with. \nFollow the format: <strong>/limit PAIR quantity price (/limit BTCUSDT 0.2 28290)</strong>"
+      "To proceed with a Limit sell order, reply with the pair quantity and price you would like to trade with. \nFollow the format: <strong>/limit_sell PAIR quantity price (/limit_sell BTCUSDT 0.2 28290)</strong>"
     );
 
     limitOrder("Sell");

@@ -65,9 +65,11 @@ export const getWalletBalances = async (_req: Request, res: Response) => {
   }
 };
 
-export const getOrders = async (_req: Request, res: Response) => {
+export const getOrders = async (req: Request, res: Response) => {
+  const { symbol } = req.body;
+
   try {
-    const orders = await bybitExchange.getOrders({ symbol: "ETHUSDT" });
+    const orders = await bybitExchange.getOrders({ symbol });
     const ordersToGet = 3;
     const ordersData: any[] = orders.data;
 

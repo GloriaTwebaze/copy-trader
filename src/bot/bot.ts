@@ -58,6 +58,11 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
   }
 };
 
+/**
+ * Place a market sell or buy order
+ *
+ * @param side `Buy` or `Sell` side
+ */
 const marketOrder = (side: string) => {
   // Command to handle setting a market order
   bot.command("market", async (ctx) => {
@@ -82,6 +87,11 @@ const marketOrder = (side: string) => {
   });
 };
 
+/**
+ * Place a limit sell or buy order
+ *
+ * @param side `Buy` or `Sell` side
+ */
 const limitOrder = (side: string) => {
   // Command to handle setting a market order
   bot.command("limit", async (ctx) => {
@@ -107,6 +117,9 @@ const limitOrder = (side: string) => {
   });
 };
 
+/**
+ * Get price of pair specified in reply.
+ */
 const getPrice = () => {
   bot.command("price", async (ctx) => {
     const args = ctx.message.text.split(" ").slice(1);
@@ -123,6 +136,69 @@ const getPrice = () => {
       ctx.replyWithHTML(
         `The last price for <strong>${symbol}</strong> is <strong>${price}</strong>`
       );
+    } catch (error) {
+      console.error(error);
+      ctx.reply(`Something went wrong, try again...`);
+    }
+  });
+};
+
+/**
+ * Get orders of pair specified in reply.
+ */
+const getOrders = () => {
+  bot.command("orders", async (ctx) => {
+    const args = ctx.message.text.split(" ").slice(1);
+    if (args.length > 1) {
+      ctx.reply("Please check that your reply matches the format provided.");
+    }
+
+    const [symbol] = args;
+
+    try {
+      const res = await axios.get(`${baseAPIURL}/get-orders`, {
+        data: { symbol },
+      });
+
+      const orders = res.data.data;
+
+      let message: string = `<strong>Your Orders</strong>`;
+
+      for (let i = 0; i < orders.length; i++) {
+        let order = orders[i];
+        console.log("Order: ", order);
+        message += `\n<strong>Order ${i + 1}</strong>`;
+        message += `\nOrder ID: <strong>${order.orderId}</strong>`;
+        message += `\nPrice: <strong>${order.price}</strong>`;
+        message += `\nSymbol: <strong>${order.symbol}</strong>`;
+        message += `\nSide: <strong>${order.side}</strong>`;
+        message += `\nQuantity: <strong>${order.qty}</strong>`;
+        message += `\nStatus: <strong>${order.status}</strong>\n`;
+        message += `---`.repeat(10);
+      }
+      ctx.replyWithHTML(message);
+    } catch (e) {
+      console.error(e.message);
+      ctx.reply("Something went wrong, try again...");
+    }
+  });
+};
+
+/**
+ * Cancel active orders of pair specified in reply. This can only cancel orders that have not been `Filled` or `Partially Filled` yet.
+ */
+const cancelOrders = () => {
+  bot.command("cancel", async (ctx) => {
+    const args = ctx.message.text.split(" ").slice(1);
+    if (args.length > 1) {
+      ctx.reply("Please check that your reply matches the format provided.");
+    }
+
+    const [symbol] = args;
+
+    try {
+      await axios.get(`${baseAPIURL}/cancel-order`);
+      ctx.reply("You have successfully cancelled active orders.");
     } catch (error) {
       console.error(error);
       ctx.reply(`Something went wrong, try again...`);
@@ -217,38 +293,20 @@ bot.command("get_wallet_balances", async (ctx) => {
 
 // Action to get orders
 bot.command("get_orders", async (ctx) => {
-  try {
-    const res = await axios.get(`${baseAPIURL}/get-orders`);
+  ctx.replyWithHTML(
+    "To get your orders, reply with the pair you would like to fetch the orders for. \nFollow the format: <strong>/orders PAIR (/orders BTCUSDT)</strong>"
+  );
 
-    const orders = res.data.data;
-
-    let message: string = `<strong>Your Orders</strong>`;
-
-    for (let i = 0; i < orders.length; i++) {
-      let order = orders[i];
-      console.log("Order: ", order);
-      message += `\n<strong>Order ${i + 1}</strong>`;
-      message += `\nOrder ID: <strong>${order.orderId}</strong>`;
-      message += `\nPrice: <strong>${order.price}</strong>`;
-      message += `\nSymbol: <strong>${order.symbol}</strong>`;
-      message += `\nSide: <strong>${order.side}</strong>`;
-      message += `\nQuantity: <strong>${order.qty}</strong>`;
-      message += `\nStatus: <strong>${order.status}</strong>\n`;
-      message += `---`.repeat(10);
-    }
-    ctx.replyWithHTML(message);
-  } catch (e) {}
+  getOrders();
 });
 
 // Action to cancel orders
 bot.command("cancel_orders", async (ctx) => {
-  try {
-    await axios.get(`${baseAPIURL}/cancel-order`);
-    ctx.reply("You have successfully cancelled active orders.");
-  } catch (error) {
-    console.error(error);
-    ctx.reply(`Something went wrong, try again...`);
-  }
+  ctx.replyWithHTML(
+    "To cancel orders, reply with the pair you would like to cancel orders for. \nFollow the format: <strong>/cancel PAIR (/cancel BTCUSDT)</strong>"
+  );
+
+  cancelOrders();
 });
 
 export { bot };

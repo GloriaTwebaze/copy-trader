@@ -18,6 +18,18 @@ export const placeOrder = async (req: Request, res: Response) => {
     });
 
     if (orderToPlace) {
+      if (order_type === "Market") {
+        return res.status(200).json({ success: true, data: orderToPlace });
+      }
+
+      const orderId = orderToPlace.order_id;
+      if (orderId) {
+        await bybitExchange.chaseOrder({
+          side,
+          symbol,
+          orderId,
+        });
+      }
       return res.status(200).json({ success: true, data: orderToPlace });
     } else {
       return res

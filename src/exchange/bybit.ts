@@ -7,6 +7,8 @@ import {
   WalletBalances,
 } from "bybit-api";
 import { CONFIG } from "../config/config";
+import { IChaseOrder } from "../types/interface";
+import { sleep } from "../utils/utils";
 
 export class BybitExchange {
   private linear: LinearClient;
@@ -30,7 +32,7 @@ export class BybitExchange {
 
     const { ret_code, ret_msg, result } = tickers;
 
-    if (ret_code === 0 && ret_msg === "OK" && result != null) {
+    if (ret_code === 0 && ret_msg === "OK") {
       return result;
     } else {
       console.log("Received Tickers: ", tickers);
@@ -73,7 +75,7 @@ export class BybitExchange {
     }
   };
 
-  getPosition = async (params:SymbolParam) => {
+  getPosition = async (params: SymbolParam) => {
     const positions = await this.linear.getPosition(params);
     const { ret_code, ret_msg, result } = positions;
 
@@ -111,6 +113,50 @@ export class BybitExchange {
 
     return { ret_code, ret_msg };
   };
+
+  chaseOrder = async (params: IChaseOrder) => {
+    const { orderId, symbol, side } = params;
+
+    let count: number = 0;
+    const maxRetries = 100;
+
+    while (true) {
+      if (!orderId) {
+        console.log("There is no order to chase after.");
+        break;
+      }
+      await sleep(10000);
+
+      let price = await this.getPrice({ symbol });
+
+      if (price) {
+        let livePrice = price[0].last_price;
+
+        if (!livePrice) {
+          console.log("No Price fetched.");
+          break;
+        }
+
+        livePrice =
+          side === "Buy" ? livePrice - 0.05 : parseFloat(livePrice) + 0.5;
+
+        console.log("Price before Replacement: ", livePrice);
+
+        const { result } =
+          await this.linear.replaceActiveOrder({
+            symbol,
+            order_id: orderId,
+            p_r_price: livePrice.toFixed(2),
+          });
+
+        count += 1;
+
+        if (Object.keys(result).length === 0 || count === maxRetries) {
+          break;
+        }
+      }
+    }
+  };
 }
 
 export const bybitExchange = new BybitExchange({
@@ -119,3 +165,6 @@ export const bybitExchange = new BybitExchange({
   testnet: true,
   baseUrl: CONFIG.BASE_URL,
 });
+// function sleep(arg0: number) {
+//   throw new Error("Function not implemented.");
+// }

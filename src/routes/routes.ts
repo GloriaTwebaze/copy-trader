@@ -6,7 +6,7 @@ import {
   getPrice,
   getWalletBalances,
   placeOrder,
-} from "../controllers/bybitController";
+} from "../controllers/bybit.controller";
 
 const router = Router();
 

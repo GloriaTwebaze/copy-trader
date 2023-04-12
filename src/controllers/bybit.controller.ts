@@ -29,8 +29,10 @@ export const placeOrder = async (req: Request, res: Response) => {
           symbol,
           orderId,
         });
+
+        console.log('Order Fulfilled: ', orderToPlace);
+        return res.status(200).json({ success: true, data: orderToPlace });
       }
-      return res.status(200).json({ success: true, data: orderToPlace });
     } else {
       return res
         .status(400)
@@ -144,9 +146,11 @@ export const getPosition = async (req: Request, res: Response) => {
   try {
     const positions = await bybitExchange.getPosition({ symbol });
 
-    console.log("Positions Got: ", positions);
-
-    return res.status(200).json({ success: true, data: positions });
+    if (positions) {
+      const position = positions[0];
+      return res.status(200).json({ success: true, data: position });
+    }
+    console.log("No positions were returned");
   } catch (error) {
     return res.status(400).json({ success: true, message: error.message });
   }

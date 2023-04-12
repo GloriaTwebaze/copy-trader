@@ -44,17 +44,33 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
     );
 
     const orderData = res.data.data;
+    const price = await getPosition(params.symbol);
 
     let message = `<strong>${params.order_type} Order ${orderData.side} for ${orderData.symbol}</strong>`;
     message += `\nUser Id: <strong>${orderData.user_id}</strong>`;
     message += `\nOrder Id: <strong>${orderData.order_id}</strong>`;
     message += `\nSymbol: <strong>${orderData.symbol}</strong>`;
-    message += `\nPrice: <strong>${orderData.price}</strong>`;
+    message += `\nPrice: <strong>${price}</strong>`;
     message += `\nQuantity: <strong>${orderData.qty}</strong>`;
     ctx.replyWithHTML(message);
   } catch (error) {
     console.error(error);
     ctx.reply(`Something went wrong, try again...`);
+  }
+};
+
+const getPosition = async (symbol: string) => {
+  try {
+    const res = await axios.get(`${baseAPIURL}/get-position`, {
+      data: { symbol },
+    });
+
+    const positionData = res.data.data;
+    const price = positionData.entry_price;
+
+    return price;
+  } catch (e) {
+    console.error(e.message);
   }
 };
 
@@ -102,6 +118,7 @@ const limitOrder = (side: string) => {
     const [symbol, qty, price] = args;
 
     try {
+      ctx.reply("Starting a Chase for the Limit Order");
       const orderDetails = {
         side: side,
         qty: parseFloat(qty),

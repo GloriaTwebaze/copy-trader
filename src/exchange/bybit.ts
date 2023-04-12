@@ -8,7 +8,7 @@ import {
 } from "bybit-api";
 import { CONFIG } from "../config/config";
 import { IChaseOrder } from "../types/interface";
-import { sleep } from "../utils/utils";
+import { getOrderStatus, sleep } from "../utils/utils";
 
 export class BybitExchange {
   private linear: LinearClient;
@@ -125,6 +125,7 @@ export class BybitExchange {
         console.log("There is no order to chase after.");
         break;
       }
+
       await sleep(10000);
 
       let price = await this.getPrice({ symbol });
@@ -138,20 +139,23 @@ export class BybitExchange {
         }
 
         livePrice =
-          side === "Buy" ? livePrice - 0.05 : parseFloat(livePrice) + 0.5;
+          side === "Buy" ? livePrice - 0.05 : parseFloat(livePrice) + 0.1;
 
-        console.log("Price before Replacement: ", livePrice);
-
-        const { result } =
-          await this.linear.replaceActiveOrder({
-            symbol,
-            order_id: orderId,
-            p_r_price: livePrice.toFixed(2),
-          });
+        const { result } = await this.linear.replaceActiveOrder({
+          symbol,
+          order_id: orderId,
+          p_r_price: livePrice.toFixed(2),
+        });
 
         count += 1;
+        const orderStatus = await getOrderStatus(orderId, symbol);
 
-        if (Object.keys(result).length === 0 || count === maxRetries) {
+        console.log("Order Status: ", orderStatus);
+
+        if (
+          (Object.keys(result).length === 0 && orderStatus === "Filled") ||
+          count === maxRetries
+        ) {
           break;
         }
       }

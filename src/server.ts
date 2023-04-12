@@ -4,7 +4,7 @@ import { CONFIG } from "./config/config";
 import configMiddleware from "./middleware/appMiddleware";
 import configRoutes from "./routes/index";
 import { bot } from "./bot/bot";
-import { monitorPrice } from "./utils/utils";
+import { getOrderStatus } from "./utils/utils";
 
 const app = express();
 
@@ -31,7 +31,6 @@ const main = () => {
     console.log(`Server running at port ${PORT}\n`+'---'.repeat(12));
   });
   startBot();
-  // monitorPrice();
 };
 
 main();

@@ -19,19 +19,22 @@ export const placeOrder = async (req: Request, res: Response) => {
 
     if (orderToPlace) {
       if (order_type === "Market") {
-        return res.status(200).json({ success: true, data: orderToPlace });
+        return res
+          .status(200)
+          .json({ success: true, data: { ...orderToPlace } });
       }
 
       const orderId = orderToPlace.order_id;
       if (orderId) {
-        await bybitExchange.chaseOrder({
+        const chase = await bybitExchange.chaseOrder({
           side,
           symbol,
           orderId,
         });
 
-        console.log('Order Fulfilled: ', orderToPlace);
-        return res.status(200).json({ success: true, data: orderToPlace });
+        return res
+          .status(200)
+          .json({ success: true, data: { ...orderToPlace, price: chase } });
       }
     } else {
       return res

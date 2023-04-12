@@ -44,7 +44,13 @@ const placeOrderRequest = async (params: OrderParams, ctx: Context) => {
     );
 
     const orderData = res.data.data;
-    const price = await getPosition(params.symbol);
+
+    let price;
+    if (orderData.type === "Market") {
+      price = await getPosition(params.symbol);
+    } else {
+      price = orderData.price;
+    }
 
     let message = `<strong>${params.order_type} Order ${orderData.side} for ${orderData.symbol}</strong>`;
     message += `\nUser Id: <strong>${orderData.user_id}</strong>`;

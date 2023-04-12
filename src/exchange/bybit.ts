@@ -150,12 +150,11 @@ export class BybitExchange {
         count += 1;
         const orderStatus = await getOrderStatus(orderId, symbol);
 
-        console.log("Order Status: ", orderStatus);
-
         if (
-          (Object.keys(result).length === 0 && orderStatus === "Filled") ||
+          (Object.keys(result).length === 0 && orderStatus?.status === "Filled") ||
           count === maxRetries
         ) {
+          return orderStatus?.price
           break;
         }
       }

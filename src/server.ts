@@ -4,7 +4,6 @@ import { CONFIG } from "./config/config";
 import configMiddleware from "./middleware/appMiddleware";
 import configRoutes from "./routes/index";
 import { bot } from "./bot/bot";
-import { getOrderStatus } from "./utils/utils";
 
 const app = express();
 
@@ -14,8 +13,13 @@ const startBot = () => {
   console.log(`---`.repeat(10));
   bot
     .launch()
-    .then(() => {})
-    .catch(() => {});
+    .then(() => {
+      console.log(`bot started  🤖 `);
+      console.log(`---`.repeat(10));
+    })
+    .catch((e) => {
+      console.error(e.message);
+    });
 };
 
 const main = () => {
@@ -28,7 +32,7 @@ const main = () => {
   configRoutes(app);
 
   app.listen(PORT, () => {
-    console.log(`Server running at port ${PORT}\n`+'---'.repeat(12));
+    console.log(`Server running at port ${PORT}\n` + "---".repeat(12));
   });
   startBot();
 };

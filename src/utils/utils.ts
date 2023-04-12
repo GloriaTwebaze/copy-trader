@@ -7,7 +7,10 @@ export const getOrderStatus = async (order_id: string, symbol: string) => {
   if (ordersData) {
     for (const orderItem of ordersData) {
       if (orderItem.order_id === order_id) {
-        return orderItem.order_status;
+        const itemStatus = orderItem.order_status;
+        const itemPrice = orderItem.price;
+        
+        return { status: itemStatus, price: itemPrice };
       }
       break;
     }
